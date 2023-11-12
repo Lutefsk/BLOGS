@@ -89,7 +89,7 @@ else if (choice == "3")
         }
         else
         {
-            Console.WriteLine("Blog not found.");
+            Console.WriteLine("Blog does not exsist.");
         }
     }
 }
