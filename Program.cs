@@ -1,7 +1,6 @@
 ﻿using NLog;
 using System.Linq;
 
-
 string path = Directory.GetCurrentDirectory() + "\\nlog.config";
 
 // create instance of Logger
@@ -18,7 +17,13 @@ while (optionNot1thru4)
     Console.WriteLine("Enter q to quit.");
 
     string choice = Console.ReadLine();
-    if (choice == "1")
+    if (choice == "q")
+    {
+        // exit 
+        optionNot1thru4 = false;
+    }
+
+    else if (choice == "1")
     {
     // Display all Blogs from the database
     var db = new BloggingContext();
@@ -51,9 +56,42 @@ catch (Exception ex)
 else if (choice == "3")
 {
     // Post to an existing Blog
-    Console.Write("Enter name of Blog you want to post to: ");
+    var db = new BloggingContext();
+    var blogs = db.Blogs.ToList();
+
+     for (int i = 0; i < blogs.Count; i++)
+    {
+        Console.WriteLine($"{i + 1}. {blogs[i].Name}");
+    }
+    Console.Write("Choose which Blog you want to post to: ");
+    
+    string resp = Console.ReadLine();
+    if (int.TryParse(resp, out int selectedBlogIndex) && selectedBlogIndex >= 1 && selectedBlogIndex <= blogs.Count)
+        {
+            var chosenBlogID = blogs[selectedBlogIndex - 1];
+    
+            Console.Write("Enter the title of the post: ");
+            string title = Console.ReadLine();
+
+            Console.Write("Enter the content of the post: ");
+            string content = Console.ReadLine();
+
+            var post = new Post
+            {
+                Title = title,
+                Content = content,
+                BlogId = chosenBlogID.BlogId 
+            };
+
+            db.Posts.Add(post);
+            db.SaveChanges();
+            logger.Info("Post created for {blogName} - Title: {title}", chosenBlogID, title);
+        }
+        else
+        {
+            Console.WriteLine("Blog not found.");
+        }
+    }
 }
-
-
 logger.Info("Program ended");
-}
+
