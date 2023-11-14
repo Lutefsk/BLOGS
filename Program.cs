@@ -1,4 +1,5 @@
-﻿using NLog;
+﻿using Microsoft.EntityFrameworkCore;
+using NLog;
 using System.Linq;
 
 string path = Directory.GetCurrentDirectory() + "\\nlog.config";
@@ -97,12 +98,14 @@ while (optionNot1thru4)
     {
         // Display posts
         var db = new BloggingContext();
-        var postList = db.Posts.ToList();
+        var postList = db.Posts.Include(b => b.Blog).ToList();
 
         Console.WriteLine("All posts in the database:");
         foreach (var item in postList)
         {
-            Console.WriteLine(item.Title);
+            Console.WriteLine($"Blog: {item.Blog.Name}");
+            Console.WriteLine($"Title: {item.Title}");
+            Console.WriteLine($"Content: {item.Content}");
         }
     }
 }
